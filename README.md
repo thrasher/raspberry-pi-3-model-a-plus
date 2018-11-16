@@ -23,6 +23,7 @@ Use a hand-drill to even out the two holes with appropriately sized drill bits.
 
 OpenSCAD
 
-## Thingiverse
+## References
 
 https://www.thingiverse.com/thing:3220994
+https://github.com/thrasher/raspberry-pi-3-model-a-plus
