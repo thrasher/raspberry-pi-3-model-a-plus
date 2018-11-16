@@ -1,4 +1,6 @@
-# Raspberry Pi 3 A+
+# Raspberry Pi 3 Model A+
+
+![OpenSCAD render of STL](https://raw.githubusercontent.com/thrasher/raspberry-pi-3-model-a-plus/master/raspberry-pi-3-model-a-plus.png)
 
 ## Summary
 
