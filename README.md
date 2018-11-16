@@ -25,5 +25,5 @@ OpenSCAD
 
 ## References
 
-https://www.thingiverse.com/thing:3220994
-https://github.com/thrasher/raspberry-pi-3-model-a-plus
+1. https://www.thingiverse.com/thing:3220994
+1. https://github.com/thrasher/raspberry-pi-3-model-a-plus
