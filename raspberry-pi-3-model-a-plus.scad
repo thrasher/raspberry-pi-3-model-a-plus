@@ -23,9 +23,7 @@ MOUNTING_HOLE_DIA = 0.125 * 25.4; // convert inches to mm
 BOARD_W = 65; // 3A+ drawing
 BOARD_H = 56; // 3A+ drawing
 
-module board_2d() {
-	difference() {
-		// union()
+module board_2d_positive() {
 		hull() {
 			circle(r = BOARD_CORNER_R);
 			translate([58,0,0])
@@ -35,6 +33,8 @@ module board_2d() {
 			translate([0,49,0])
 			circle(r = BOARD_CORNER_R);
 		}
+}
+module board_2d_negative() {
   	circle(d = MOUNTING_HOLE_DIA);
 		translate([58,0,0])
   	circle(d = MOUNTING_HOLE_DIA);
@@ -42,6 +42,11 @@ module board_2d() {
   	circle(d = MOUNTING_HOLE_DIA);
 		translate([0,49,0])
   	circle(d = MOUNTING_HOLE_DIA);
+}
+module board_2d() {
+	difference() {
+		board_2d_positive();
+		board_2d_negative();
 	}
 }
 
@@ -143,10 +148,10 @@ module _cut_square() {
 }
 
 // clearence for solder joints or components on underside of board
+UNDERSIDE_DEPTH = 2.2; // clearence required by 3B+
 module underside_clearence() {
-	DEPTH = 2.2; // clearence required by 3B+
-	translate([0,0,-DEPTH])
-	linear_extrude(height = DEPTH)
+	translate([0,0,-UNDERSIDE_DEPTH])
+	linear_extrude(height = UNDERSIDE_DEPTH)
 	difference() {
 		board_2d();
 		_cut_square();
@@ -175,4 +180,17 @@ module 3Aplus() {
 	color("blue", alpha = 0.2) underside_clearence();
 }
 
+INTERIOR_HEIGHT = 12.5;
+module case() {
+	MARGIN = 0.5; // space on each edge of board, to wall of case
+
+	linear_extrude(height = INTERIOR_HEIGHT - UNDERSIDE_DEPTH)
+	scale([(BOARD_W + MARGIN*2)/BOARD_W, (BOARD_H + MARGIN*2)/BOARD_H])
+//	translate([BOARD_CORNER_R-BOARD_W/2, BOARD_CORNER_R-BOARD_H/2, 0])
+	translate([-MARGIN, -MARGIN, 0])
+	color("white", alpha = 0.2) board_2d_positive();
+}
+
 3Aplus();
+// case();
+
