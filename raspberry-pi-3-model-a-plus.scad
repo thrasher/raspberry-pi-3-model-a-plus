@@ -275,12 +275,13 @@ module vesa(SIZE = 75) {
 
 // render.py
 part = 3;
+VESA_SIZE = 75;
 if (part == 1) {
 	3Aplus();
 } else if (part == 2) {
 	color("blue") case();
 } else if (part == 3) {
-	color("blue") case_vesa(75);
+	color("blue") case_vesa(VESA_SIZE);
 } else {
 	3Aplus();
 	color("blue") case();
