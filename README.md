@@ -1,6 +1,10 @@
 # Raspberry Pi 3 Model A+
 
-![OpenSCAD render of STL](https://raw.githubusercontent.com/thrasher/raspberry-pi-3-model-a-plus/master/raspberry-pi-3-model-a-plus.png)
+This is a work in proress... the case hasn't been tested with an actual physical 3A+, as my shippment hasn't arrived yet.
+
+![OpenSCAD render of Raspberry Pi 3 Model A+ STL](https://raw.githubusercontent.com/thrasher/raspberry-pi-3-model-a-plus/master/raspberry-pi-3-model-a-plus.png)
+
+![OpenSCAD render of case STL](https://raw.githubusercontent.com/thrasher/raspberry-pi-3-model-a-plus/master/case.png)
 
 ## Summary
 
