@@ -135,6 +135,21 @@ module mini_usb_port() {
 	cube([D, W, H ], center = true);
 }
 
+module sdcard_slot() {
+	// note: inserted card sticks out 2.5mm from edge of G10
+	// from 3B+ usb: width: 15, depth: 17.25
+	W = 12;
+	D = 11.5;
+	H = 1.5 + 0.5; // measured from 3B+ as 1.5, but card adds 0.5
+	OVERHANG = -1.5; // board USB overhang measured from 3B+
+
+	translate([ -BOARD_CORNER_R, -BOARD_CORNER_R, -H/2])
+	translate([D/2 - OVERHANG, BOARD_H/2, 0])
+	//rotate([0,0,90])
+	// scale([2,1,1])
+	cube([D, W, H], center = true);
+}
+
 module _cut_square() {
 	hull() {
 		translate([-BOARD_CORNER_R,-BOARD_CORNER_R,0])
@@ -176,6 +191,7 @@ module components() {
 	color("silver") audio_port();
 	color("silver") hdmi_port();
 	color("silver") mini_usb_port();
+	color("red") sdcard_slot();
 }
 
 module 3Aplus() {
@@ -274,7 +290,7 @@ module vesa(SIZE = 75) {
 }
 
 // render.py
-part = 3;
+part = 0;
 VESA_SIZE = 75;
 if (part == 1) {
 	3Aplus();
