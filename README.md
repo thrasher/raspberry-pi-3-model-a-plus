@@ -20,7 +20,9 @@ Raspberry Pi 3 Model A+ Model
 
 ## Summary
 
-Simple drawing of [Raspberry Pi 3 Model A+](https://www.raspberrypi.org/products/raspberry-pi-3-model-a-plus/).
+Simple cases for a [Raspberry Pi 3 Model A+](https://www.raspberrypi.org/products/raspberry-pi-3-model-a-plus/).
+
+The VESA cases allow for mounting to the back of a monitor using M4 screws.
 
 Geometry created from the [published mechanical drawing](https://www.raspberrypi.org/app/uploads/2018/11/Raspberry_Pi_3A_mechanical-drawing.pdf), and caliper measurements from a 3 B+ (since the 3 A+ part hadn't shipped at the time - Nov 16, 2018).
 
