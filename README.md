@@ -2,9 +2,13 @@
 
 This is a work in proress... the case hasn't been tested with an actual physical 3A+, as my shippment hasn't arrived yet.
 
-![OpenSCAD render of Raspberry Pi 3 Model A+ STL](https://raw.githubusercontent.com/thrasher/raspberry-pi-3-model-a-plus/master/raspberry-pi-3-model-a-plus.png)
-
 ![OpenSCAD render of case STL](https://raw.githubusercontent.com/thrasher/raspberry-pi-3-model-a-plus/master/case.png)
+
+![OpenSCAD render of VESA-75 case STL](https://raw.githubusercontent.com/thrasher/raspberry-pi-3-model-a-plus/master/case-vesa-75.png)
+
+![OpenSCAD render of VESA-100 case STL](https://raw.githubusercontent.com/thrasher/raspberry-pi-3-model-a-plus/master/case-vesa-100.png)
+
+![OpenSCAD render of Raspberry Pi 3 Model A+ STL](https://raw.githubusercontent.com/thrasher/raspberry-pi-3-model-a-plus/master/raspberry-pi-3-model-a-plus.png)
 
 ## Summary
 
