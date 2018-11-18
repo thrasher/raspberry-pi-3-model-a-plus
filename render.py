@@ -14,8 +14,15 @@ def render():
 	start = time.time()
 
 	scad = []
-	scad.append(subprocess.Popen(['openscad','-D', 'part=1','raspberry-pi-3-model-a-plus.scad','-o','raspberry-pi-3-model-a-plus.stl']))
-	scad.append(subprocess.Popen(['openscad','-D', 'part=2','raspberry-pi-3-model-a-plus.scad','-o','case.stl']))
+	scad.append(subprocess.Popen(['openscad','raspberry-pi-3-model-a-plus.scad','-o','raspberry-pi-3-model-a-plus.stl','-D', 'part=1']))
+	scad.append(subprocess.Popen(['openscad','raspberry-pi-3-model-a-plus.scad','-o','raspberry-pi-3-model-a-plus.png','-D', 'part=1','--preview','--imgsize=600,400']))
+
+	scad.append(subprocess.Popen(['openscad','raspberry-pi-3-model-a-plus.scad','-o','case.stl','-D', 'part=2']))
+	scad.append(subprocess.Popen(['openscad','raspberry-pi-3-model-a-plus.scad','-o','case.png','-D', 'part=2','--preview','--imgsize=600,400']))
+
+	scad.append(subprocess.Popen(['openscad','raspberry-pi-3-model-a-plus.scad','-o','case-vesa.stl','-D', 'part=3']))
+	scad.append(subprocess.Popen(['openscad','raspberry-pi-3-model-a-plus.scad','-o','case-vesa.png','-D', 'part=3','--preview','--imgsize=600,400']))
+
 	# wait for all threads to finish, so we know we're done
 	for p in scad:
 		p.wait()

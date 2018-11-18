@@ -22,15 +22,17 @@ BOARD_THICKNESS = 1.15; // 1.15 as measured on Raspberry Pi 3 Model B+
 MOUNTING_HOLE_DIA = 0.125 * 25.4; // convert inches to mm
 BOARD_W = 65; // 3A+ drawing
 BOARD_H = 56; // 3A+ drawing
+HOLE_W = 58;
+HOLE_H = 49;
 UNDERSIDE_DEPTH = 2.2; // clearence required by 3B+
 
 module board_2d_positive(RADIUS = 10) {
 		circle(r = RADIUS);
-		translate([58,0,0])
+		translate([HOLE_W, 0, 0])
 		circle(r = RADIUS);
-		translate([58,49,0])
+		translate([HOLE_W, HOLE_H, 0])
 		circle(r = RADIUS);
-		translate([0,49,0])
+		translate([0, HOLE_H, 0])
 		circle(r = RADIUS);
 }
 module board_2d() {
@@ -49,7 +51,7 @@ module board() {
 module  pin_header() {
 	// from 3B+ pin header: 5.1 x 50.7 x 10.4-BOARD_THICKNESS
 	H = 10.4-BOARD_THICKNESS;
-	translate([29, 49, H/2 + BOARD_THICKNESS])
+	translate([29, HOLE_H, H/2 + BOARD_THICKNESS])
 	cube([50.7, 5.1, H ], center = true);
 }
 
@@ -146,13 +148,13 @@ module _cut_square() {
 }
 module mounting_posts() {
 		_cut_square();
-		translate([58,0,0])
+		translate([HOLE_W, 0, 0])
 		rotate(90)
 		_cut_square();
-		translate([58,49,0])
+		translate([HOLE_W, HOLE_H,0])
 		rotate(180)
 		_cut_square();
-		translate([0,49,0])
+		translate([0, HOLE_H,0])
 		rotate(270)
 		_cut_square();
 }
@@ -191,7 +193,7 @@ module case_plain() {
 	board_2d_positive(MOUNTING_HOLE_DIA/2 * 0.9);
 
 	// upper walls
-	linear_extrude(height = INTERIOR_HEIGHT)
+	linear_extrude(height = INTERIOR_HEIGHT, convexity = 2)
 	difference() {
 		hull() board_2d_positive(BOARD_CORNER_R + CASE_WALL_THICKNESS);
 		hull() board_2d_positive(BOARD_CORNER_R + CASE_PI_CLEARENCE);
@@ -228,12 +230,57 @@ module case() {
 	}
 }
 
+module case_vesa(SIZE = 75) {
+	case();
+
+	// add base attachment points
+	translate([0,0,-UNDERSIDE_DEPTH-CASE_WALL_THICKNESS])
+	linear_extrude(height = CASE_WALL_THICKNESS)
+	vesa(SIZE);
+}
+
+// FDMI MIS-D
+M4_DRILL = 3.4; // mm
+module vesa_holes(SIZE = 75, HOLE_D = 3.4) {
+	circle(d = HOLE_D);
+	translate([SIZE,0,0])
+	circle(d = HOLE_D);
+	translate([SIZE,SIZE,0])
+	circle(d = HOLE_D);
+	translate([0,SIZE,0])
+	circle(d = HOLE_D);
+}
+module vesa_cross(SIZE = 75, HOLE_D = 3.4) {
+	hull() {
+		circle(d = HOLE_D);
+		translate([SIZE,SIZE,0])
+		circle(d = HOLE_D);
+	}
+	hull() {
+		translate([SIZE,0,0])
+		circle(d = HOLE_D);
+		translate([0,SIZE,0])
+		circle(d = HOLE_D);
+	}
+}
+
+module vesa(SIZE = 75) {
+	translate([-SIZE/2, -SIZE/2, 0])
+	translate([HOLE_W/2, HOLE_H/2, 0])
+	difference() {
+		vesa_cross(SIZE, M4_DRILL*3);
+		vesa_holes(SIZE);
+	}
+}
+
 // render.py
-part = 0;
+part = 3;
 if (part == 1) {
 	3Aplus();
 } else if (part == 2) {
 	color("blue") case();
+} else if (part == 3) {
+	color("blue") case_vesa(75);
 } else {
 	3Aplus();
 	color("blue") case();
