@@ -33,7 +33,7 @@ Dimensions are in millimeters.
 ## Post-Printing
 
 Clean off any raft or supports with a knife.
-Use a hand-drill to even out the two holes with appropriately sized drill bits.
+Use a hand-drill to even out the holes with appropriately sized drill bits.
 
 ## How I Designed This
 
