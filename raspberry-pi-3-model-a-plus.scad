@@ -22,31 +22,22 @@ BOARD_THICKNESS = 1.15; // 1.15 as measured on Raspberry Pi 3 Model B+
 MOUNTING_HOLE_DIA = 0.125 * 25.4; // convert inches to mm
 BOARD_W = 65; // 3A+ drawing
 BOARD_H = 56; // 3A+ drawing
+UNDERSIDE_DEPTH = 2.2; // clearence required by 3B+
 
-module board_2d_positive() {
-		hull() {
-			circle(r = BOARD_CORNER_R);
-			translate([58,0,0])
-			circle(r = BOARD_CORNER_R);
-			translate([58,49,0])
-			circle(r = BOARD_CORNER_R);
-			translate([0,49,0])
-			circle(r = BOARD_CORNER_R);
-		}
-}
-module board_2d_negative() {
-  	circle(d = MOUNTING_HOLE_DIA);
+module board_2d_positive(RADIUS = 10) {
+		circle(r = RADIUS);
 		translate([58,0,0])
-  	circle(d = MOUNTING_HOLE_DIA);
+		circle(r = RADIUS);
 		translate([58,49,0])
-  	circle(d = MOUNTING_HOLE_DIA);
+		circle(r = RADIUS);
 		translate([0,49,0])
-  	circle(d = MOUNTING_HOLE_DIA);
+		circle(r = RADIUS);
 }
 module board_2d() {
 	difference() {
-		board_2d_positive();
-		board_2d_negative();
+		hull()
+		board_2d_positive(BOARD_CORNER_R);
+		board_2d_positive(MOUNTING_HOLE_DIA/2);
 	}
 }
 
@@ -143,24 +134,35 @@ module mini_usb_port() {
 }
 
 module _cut_square() {
+	hull() {
 		translate([-BOARD_CORNER_R,-BOARD_CORNER_R,0])
-  	square(BOARD_CORNER_R*2);
+  	square(BOARD_CORNER_R);
+  	circle(r = BOARD_CORNER_R);
+		translate([0,-BOARD_CORNER_R,0])
+  	square(BOARD_CORNER_R);
+		translate([-BOARD_CORNER_R,0,0])
+  	square(BOARD_CORNER_R);
+  }
 }
-
+module mounting_posts() {
+		_cut_square();
+		translate([58,0,0])
+		rotate(90)
+		_cut_square();
+		translate([58,49,0])
+		rotate(180)
+		_cut_square();
+		translate([0,49,0])
+		rotate(270)
+		_cut_square();
+}
 // clearence for solder joints or components on underside of board
-UNDERSIDE_DEPTH = 2.2; // clearence required by 3B+
 module underside_clearence() {
 	translate([0,0,-UNDERSIDE_DEPTH])
 	linear_extrude(height = UNDERSIDE_DEPTH)
 	difference() {
 		board_2d();
-		_cut_square();
-		translate([58,0,0])
-		_cut_square();
-		translate([58,49,0])
-		_cut_square();
-		translate([0,49,0])
-		_cut_square();
+		mounting_posts();
 	}
 }
 
@@ -181,16 +183,58 @@ module 3Aplus() {
 }
 
 INTERIOR_HEIGHT = 12.5;
-module case() {
-	MARGIN = 0.5; // space on each edge of board, to wall of case
+CASE_WALL_THICKNESS = 1.5;
+CASE_PI_CLEARENCE = 0.5; // space btw pi edge and case wall
+module case_plain() {
+	// mounting posts
+	linear_extrude(height = BOARD_THICKNESS)
+	board_2d_positive(MOUNTING_HOLE_DIA/2 * 0.9);
 
-	linear_extrude(height = INTERIOR_HEIGHT - UNDERSIDE_DEPTH)
-	scale([(BOARD_W + MARGIN*2)/BOARD_W, (BOARD_H + MARGIN*2)/BOARD_H])
-//	translate([BOARD_CORNER_R-BOARD_W/2, BOARD_CORNER_R-BOARD_H/2, 0])
-	translate([-MARGIN, -MARGIN, 0])
-	color("white", alpha = 0.2) board_2d_positive();
+	// upper walls
+	linear_extrude(height = INTERIOR_HEIGHT)
+	difference() {
+		hull() board_2d_positive(BOARD_CORNER_R + CASE_WALL_THICKNESS);
+		hull() board_2d_positive(BOARD_CORNER_R + CASE_PI_CLEARENCE);
+	}
+
+	// through-hole clearence below g10
+	translate([0,0,-UNDERSIDE_DEPTH])
+	linear_extrude(height = UNDERSIDE_DEPTH)
+	difference() {
+		hull() board_2d_positive(BOARD_CORNER_R + CASE_WALL_THICKNESS);
+		difference() {
+			hull() board_2d_positive(BOARD_CORNER_R + 0);
+			mounting_posts();
+		}
+	}
+
+	// floor
+	translate([0,0,-UNDERSIDE_DEPTH-CASE_WALL_THICKNESS])
+	linear_extrude(height = CASE_WALL_THICKNESS)
+	hull() board_2d_positive(BOARD_CORNER_R + CASE_WALL_THICKNESS);
 }
 
-3Aplus();
-// case();
+module case() {
+	difference() {
+		case_plain();
+		scale([1.1, 1, 1])
+		usb_port();
+		scale([1, 1, 1])
+		audio_port();
+		scale([1, 1.1, 1])
+		hdmi_port();
+		scale([1, 1.1, 1])
+		mini_usb_port();
+	}
+}
 
+// render.py
+part = 0;
+if (part == 1) {
+	3Aplus();
+} else if (part == 2) {
+	color("blue") case();
+} else {
+	3Aplus();
+	color("blue") case();
+}

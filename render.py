@@ -14,7 +14,8 @@ def render():
 	start = time.time()
 
 	scad = []
-	scad.append(subprocess.Popen(['openscad','-D', 'foo=bar','raspberry-pi-3-model-a-plus.scad','-o','raspberry-pi-3-model-a-plus.stl']))
+	scad.append(subprocess.Popen(['openscad','-D', 'part=1','raspberry-pi-3-model-a-plus.scad','-o','raspberry-pi-3-model-a-plus.stl']))
+	scad.append(subprocess.Popen(['openscad','-D', 'part=2','raspberry-pi-3-model-a-plus.scad','-o','case.stl']))
 	# wait for all threads to finish, so we know we're done
 	for p in scad:
 		p.wait()
