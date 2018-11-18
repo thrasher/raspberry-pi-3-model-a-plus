@@ -76,7 +76,7 @@ module CSI_camera_port() {
 	cube([22.1, 2.5, H ], center = true);
 }
 
-module usb_port() {
+module usb_port(DO_CUTOUT = false) {
 	// from 3B+ usb: width: 15, depth: 17.25
 	W = 15;
 	D = 17.25;
@@ -85,15 +85,22 @@ module usb_port() {
 
 	translate([ -BOARD_CORNER_R, -BOARD_CORNER_R, BOARD_THICKNESS])
 	translate([65 - D/2 + OVERHANG, 31.45, H/2])
-	// rotate([0,0,90])
-	cube([D, W, H ], center = true);
+	union() {
+		cube([D, W, H ], center = true);
+
+		// properly oriented case cutout
+		if (DO_CUTOUT) {
+			CUTOUT_MARGIN = 0.2;
+			port_cutout(W + CUTOUT_MARGIN*2, H + CUTOUT_MARGIN*2, CUTOUT_MARGIN);
+		}
+	}
 }
 
-module audio_port() {
+module audio_port(DO_CUTOUT = false) {
 	W = 7;
 	D_PORT = 2.5; // round port dia measured from 3B+
 	D = 15.5; // overall port depth measured from 3B+
-	H = 6; // height specified in 3A+ drawing: 6
+	H = 6; // diameter of port measured from 3B+
 
 	OVERHANG = 2.15; // board USB overhang measured from 3B+: 2.15;
 
@@ -106,10 +113,16 @@ module audio_port() {
 		translate([D/2,0,0])
 		rotate([0,90,0])
 		cylinder(d = H, h = D_PORT, center = true);
+		// case cutout
+		if (DO_CUTOUT) {
+			// port_cutout(0, 0, D_PORT/2 + 0.3);
+			CUTOUT_MARGIN = 0.2 + H/2;
+			port_cutout(CUTOUT_MARGIN*2, CUTOUT_MARGIN*2, CUTOUT_MARGIN);
+		}
 	}
 }
 
-module hdmi_port() {
+module hdmi_port(DO_CUTOUT = false) {
 	// from 3B+ usb: width: 15, depth: 17.25
 	W = 15;
 	D = 11.7;
@@ -118,11 +131,18 @@ module hdmi_port() {
 
 	translate([ -BOARD_CORNER_R, -BOARD_CORNER_R, BOARD_THICKNESS])
 	translate([32, D/2-OVERHANG, H/2])
-	rotate([0,0,90])
-	cube([D, W, H ], center = true);
+	rotate([0,0,-90])
+	union() {
+		cube([D, W, H ], center = true);
+		// properly oriented case cutout
+		if (DO_CUTOUT) {
+			CUTOUT_MARGIN = 0.2;
+			port_cutout(W + CUTOUT_MARGIN*2, H + CUTOUT_MARGIN*2, CUTOUT_MARGIN);
+		}
+	}
 }
 
-module mini_usb_port() {
+module mini_usb_port(DO_CUTOUT = false) {
 	// from 3B+ usb: width: 15, depth: 17.25
 	W = 8;
 	D = 5.6;
@@ -131,8 +151,15 @@ module mini_usb_port() {
 
 	translate([ -BOARD_CORNER_R, -BOARD_CORNER_R, BOARD_THICKNESS])
 	translate([10.6, D/2-OVERHANG, H/2])
-	rotate([0,0,90])
-	cube([D, W, H ], center = true);
+	rotate([0,0,-90])
+	union() {
+		cube([D, W, H ], center = true);
+		// properly oriented case cutout
+		if (DO_CUTOUT) {
+			CUTOUT_MARGIN = 0.2;
+			port_cutout(W + CUTOUT_MARGIN*2, H + CUTOUT_MARGIN*2, CUTOUT_MARGIN);
+		}
+	}
 }
 
 module sdcard_slot(DO_CUTOUT = false) {
@@ -145,24 +172,39 @@ module sdcard_slot(DO_CUTOUT = false) {
 
 	translate([ -BOARD_CORNER_R, -BOARD_CORNER_R, -H/2])
 	translate([D/2 - OVERHANG, BOARD_H/2, 0])
+	rotate([0,0,180])
 	union() {
 		cube([D, W, H], center = true);
 
 		// properly oriented case cutout
 		if (DO_CUTOUT) {
-			CUT_DEPTH = 40;
-			translate([-CUT_DEPTH/2,0,0])
-			hull() {
-				translate([0,D/2,0])
-				rotate([0,90,0])
-				cylinder(d = H + 2, h = CUT_DEPTH, center = true);
-				translate([0,-D/2,0])
-				rotate([0,90,0])
-				cylinder(d = H + 2, h = CUT_DEPTH, center = true);
-			}
+			CUTOUT_MARGIN = 1;
+			port_cutout(W + CUTOUT_MARGIN*2, H + CUTOUT_MARGIN*2, CUTOUT_MARGIN);
 		}
 	}
+}
 
+module port_cutout(W, H, CUT_RADIUS = 0.2) {
+	// CUT_RADIUS = 0.2;
+	CUT_WIDTH = W - CUT_RADIUS*2;
+	CUT_HEIGHT = H - CUT_RADIUS*2;
+	CUT_DEPTH = 30;
+
+	translate([CUT_DEPTH/2,0,0])
+	rotate([0,90,0])
+	hull() {
+		CW = CUT_WIDTH/2;
+		CH = CUT_HEIGHT/2;
+
+		translate([-CH,-CW,0])
+		cylinder(r = CUT_RADIUS, h = CUT_DEPTH, center = true);
+		translate([CH,CW,0])
+		cylinder(r = CUT_RADIUS, h = CUT_DEPTH, center = true);
+		translate([-CH,CW,0])
+		cylinder(r = CUT_RADIUS, h = CUT_DEPTH, center = true);
+		translate([CH,-CW,0])
+		cylinder(r = CUT_RADIUS, h = CUT_DEPTH, center = true);
+	}
 }
 
 module _cut_square() {
@@ -202,10 +244,10 @@ module components(DO_CUTOUT = false) {
 	color("grey") pin_header();
 	color("grey") DSI_display_port();
 	color("grey") CSI_camera_port();
-	color("silver") usb_port();
-	color("silver") audio_port();
-	color("silver") hdmi_port();
-	color("silver") mini_usb_port();
+	color("silver") usb_port(DO_CUTOUT);
+	color("silver") audio_port(DO_CUTOUT);
+	color("silver") hdmi_port(DO_CUTOUT);
+	color("silver") mini_usb_port(DO_CUTOUT);
 	color("red") sdcard_slot(DO_CUTOUT);
 }
 
@@ -250,15 +292,6 @@ module case_plain() {
 module case() {
 	difference() {
 		case_plain();
-		scale([1.1, 1, 1])
-		usb_port();
-		scale([1, 1, 1])
-		audio_port();
-		scale([1, 1.1, 1])
-		hdmi_port();
-		scale([1, 1.1, 1])
-		mini_usb_port();
-
 		components(DO_CUTOUT = true);
 	}
 }
