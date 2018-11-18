@@ -24,7 +24,7 @@ BOARD_W = 65; // 3A+ drawing
 BOARD_H = 56; // 3A+ drawing
 HOLE_W = 58;
 HOLE_H = 49;
-UNDERSIDE_DEPTH = 2.2; // clearence required by 3B+
+UNDERSIDE_DEPTH = 3; // clearence required by 3B+: 2.2
 
 module board_2d_positive(RADIUS = 10) {
 		circle(r = RADIUS);
@@ -135,7 +135,7 @@ module mini_usb_port() {
 	cube([D, W, H ], center = true);
 }
 
-module sdcard_slot() {
+module sdcard_slot(DO_CUTOUT = false) {
 	// note: inserted card sticks out 2.5mm from edge of G10
 	// from 3B+ usb: width: 15, depth: 17.25
 	W = 12;
@@ -145,9 +145,24 @@ module sdcard_slot() {
 
 	translate([ -BOARD_CORNER_R, -BOARD_CORNER_R, -H/2])
 	translate([D/2 - OVERHANG, BOARD_H/2, 0])
-	//rotate([0,0,90])
-	// scale([2,1,1])
-	cube([D, W, H], center = true);
+	union() {
+		cube([D, W, H], center = true);
+
+		// properly oriented case cutout
+		if (DO_CUTOUT) {
+			CUT_DEPTH = 40;
+			translate([-CUT_DEPTH/2,0,0])
+			hull() {
+				translate([0,D/2,0])
+				rotate([0,90,0])
+				cylinder(d = H + 2, h = CUT_DEPTH, center = true);
+				translate([0,-D/2,0])
+				rotate([0,90,0])
+				cylinder(d = H + 2, h = CUT_DEPTH, center = true);
+			}
+		}
+	}
+
 }
 
 module _cut_square() {
@@ -183,7 +198,7 @@ module underside_clearence() {
 	}
 }
 
-module components() {
+module components(DO_CUTOUT = false) {
 	color("grey") pin_header();
 	color("grey") DSI_display_port();
 	color("grey") CSI_camera_port();
@@ -191,7 +206,7 @@ module components() {
 	color("silver") audio_port();
 	color("silver") hdmi_port();
 	color("silver") mini_usb_port();
-	color("red") sdcard_slot();
+	color("red") sdcard_slot(DO_CUTOUT);
 }
 
 module 3Aplus() {
@@ -217,7 +232,7 @@ module case_plain() {
 
 	// through-hole clearence below g10
 	translate([0,0,-UNDERSIDE_DEPTH])
-	linear_extrude(height = UNDERSIDE_DEPTH)
+	linear_extrude(height = UNDERSIDE_DEPTH, convexity = 2)
 	difference() {
 		hull() board_2d_positive(BOARD_CORNER_R + CASE_WALL_THICKNESS);
 		difference() {
@@ -243,6 +258,8 @@ module case() {
 		hdmi_port();
 		scale([1, 1.1, 1])
 		mini_usb_port();
+
+		components(DO_CUTOUT = true);
 	}
 }
 
