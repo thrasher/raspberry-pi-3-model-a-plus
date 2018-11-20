@@ -260,6 +260,7 @@ module 3Aplus() {
 INTERIOR_HEIGHT = 12.5;
 CASE_WALL_THICKNESS = 2.5;
 CASE_PI_CLEARENCE = 1.0; // space btw pi edge and case wall
+FLOOR_THICKNESS = CASE_WALL_THICKNESS * 2;
 module case_plain() {
 	// mounting posts
 	linear_extrude(height = BOARD_THICKNESS * 2)
@@ -284,7 +285,6 @@ module case_plain() {
 	}
 
 	// floor
-	FLOOR_THICKNESS = CASE_WALL_THICKNESS * 2;
 	translate([0,0,-UNDERSIDE_DEPTH-FLOOR_THICKNESS])
 	linear_extrude(height = FLOOR_THICKNESS)
 	hull() board_2d_positive(BOARD_CORNER_R + CASE_WALL_THICKNESS);
@@ -301,8 +301,8 @@ module case_vesa(SIZE = 75) {
 	case();
 
 	// add base attachment points
-	translate([0,0,-UNDERSIDE_DEPTH-CASE_WALL_THICKNESS])
-	linear_extrude(height = CASE_WALL_THICKNESS)
+	translate([0,0,-UNDERSIDE_DEPTH-FLOOR_THICKNESS])
+	linear_extrude(height = FLOOR_THICKNESS)
 	vesa(SIZE);
 }
 
