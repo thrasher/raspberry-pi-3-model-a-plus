@@ -26,15 +26,24 @@ HOLE_W = 58;
 HOLE_H = 49;
 UNDERSIDE_DEPTH = 3; // clearence required by 3B+: 2.2
 
-module board_2d_positive(RADIUS = 10) {
-		circle(r = RADIUS);
+// layout children relative to each mounting hole
+module mounting_layout() {
+		children();
 		translate([HOLE_W, 0, 0])
-		circle(r = RADIUS);
+		rotate(90)
+		children();
 		translate([HOLE_W, HOLE_H, 0])
-		circle(r = RADIUS);
+		rotate(180)
+		children();
 		translate([0, HOLE_H, 0])
-		circle(r = RADIUS);
+		rotate(270)
+		children();
 }
+
+module board_2d_positive(RADIUS = 10) {
+		mounting_layout() circle(r = RADIUS);
+}
+
 module board_2d() {
 	difference() {
 		hull()
@@ -207,28 +216,24 @@ module port_cutout(W, H, CUT_RADIUS = 0.2) {
 	}
 }
 
-module _cut_square() {
-	hull() {
-		translate([-BOARD_CORNER_R,-BOARD_CORNER_R,0])
-  	square(BOARD_CORNER_R);
-  	circle(r = BOARD_CORNER_R);
-		translate([0,-BOARD_CORNER_R,0])
-  	square(BOARD_CORNER_R);
-		translate([-BOARD_CORNER_R,0,0])
-  	square(BOARD_CORNER_R);
-  }
+module mounting_post() {
+	// difference() {
+		hull() {
+	  	circle(r = BOARD_CORNER_R);
+			translate([-BOARD_CORNER_R,-BOARD_CORNER_R,0])
+	  	square(BOARD_CORNER_R);
+			translate([0,-BOARD_CORNER_R,0])
+	  	square(BOARD_CORNER_R);
+			translate([-BOARD_CORNER_R,0,0])
+	  	square(BOARD_CORNER_R);
+	  }
+	  // hole to screw into
+	 //  circle(d = MOUNTING_HOLE_DIA*.75);
+  // }
 }
+
 module mounting_posts() {
-		_cut_square();
-		translate([HOLE_W, 0, 0])
-		rotate(90)
-		_cut_square();
-		translate([HOLE_W, HOLE_H,0])
-		rotate(180)
-		_cut_square();
-		translate([0, HOLE_H,0])
-		rotate(270)
-		_cut_square();
+	mounting_layout() mounting_post();
 }
 // clearence for solder joints or components on underside of board
 module underside_clearence() {
@@ -257,15 +262,19 @@ module 3Aplus() {
 	color("blue", alpha = 0.2) underside_clearence();
 }
 
-INTERIOR_HEIGHT = 12.5;
+INTERIOR_HEIGHT = 12.5 - 8.35;
 CASE_WALL_THICKNESS = 2.5;
 CASE_PI_CLEARENCE = 1.0; // space btw pi edge and case wall
 FLOOR_THICKNESS = CASE_WALL_THICKNESS * 2;
-module case_plain() {
-	// mounting posts
-	linear_extrude(height = BOARD_THICKNESS * 2)
-	board_2d_positive(MOUNTING_HOLE_DIA/2 * 0.75);
 
+module sphere_post() {
+	//cylinder(d = MOUNTING_HOLE_DIA * 0.75, h = BOARD_THICKNESS);
+	//translate([0,0,BOARD_THICKNESS])
+	sphere(d = MOUNTING_HOLE_DIA * .75);
+}
+
+// case_plain();
+module case_plain() {
 	// upper walls
 	linear_extrude(height = INTERIOR_HEIGHT, convexity = 2)
 	difference() {
@@ -290,15 +299,24 @@ module case_plain() {
 	hull() board_2d_positive(BOARD_CORNER_R + CASE_WALL_THICKNESS);
 }
 
-module case() {
+module case(MOUNT = "post") {
 	difference() {
 		case_plain();
 		components(DO_CUTOUT = true);
+
+		if (MOUNT != "post") {
+			// holes for mounting screws
+			translate([0,0,-UNDERSIDE_DEPTH-FLOOR_THICKNESS + 1])
+			mounting_layout() cylinder(d = MOUNTING_HOLE_DIA * 0.75, h=100);
+		}
+	}
+	if (MOUNT == "post") {
+		mounting_layout() sphere_post();
 	}
 }
 
 module case_vesa(SIZE = 75) {
-	case();
+	case("hole");
 
 	// add base attachment points
 	translate([0,0,-UNDERSIDE_DEPTH-FLOOR_THICKNESS])
@@ -346,10 +364,10 @@ VESA_SIZE = 75;
 if (part == 1) {
 	3Aplus();
 } else if (part == 2) {
-	color("blue") case();
+	color("blue") case("post");
 } else if (part == 3) {
 	color("blue") case_vesa(VESA_SIZE);
 } else {
 	3Aplus();
-	color("blue") case();
+	color("blue") case("post");
 }
