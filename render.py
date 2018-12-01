@@ -26,6 +26,9 @@ def render():
 	scad.append(subprocess.Popen(['openscad','raspberry-pi-3-model-a-plus.scad','-o','case-vesa-100.stl','-D', 'part=3','-D', 'VESA_SIZE=100']))
 	scad.append(subprocess.Popen(['openscad','raspberry-pi-3-model-a-plus.scad','-o','case-vesa-100.png','-D', 'part=3','-D', 'VESA_SIZE=100','--preview','--imgsize=626,470']))
 
+	scad.append(subprocess.Popen(['openscad','raspberry-pi-3-model-a-plus.scad','-o','lid.stl','-D', 'part=4']))
+	scad.append(subprocess.Popen(['openscad','raspberry-pi-3-model-a-plus.scad','-o','lid.png','-D', 'part=4','--preview','--imgsize=626,470']))
+
 	# wait for all threads to finish, so we know we're done
 	for p in scad:
 		p.wait()

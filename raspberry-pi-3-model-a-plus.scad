@@ -99,7 +99,7 @@ module usb_port(DO_CUTOUT = false) {
 
 		// properly oriented case cutout
 		if (DO_CUTOUT) {
-			CUTOUT_MARGIN = 0.2;
+			CUTOUT_MARGIN = 0.5;
 			port_cutout(W + CUTOUT_MARGIN*2, H + CUTOUT_MARGIN*2, CUTOUT_MARGIN);
 		}
 	}
@@ -125,7 +125,7 @@ module audio_port(DO_CUTOUT = false) {
 		// case cutout
 		if (DO_CUTOUT) {
 			// port_cutout(0, 0, D_PORT/2 + 0.3);
-			CUTOUT_MARGIN = 0.2 + H/2;
+			CUTOUT_MARGIN = 0.5 + H/2;
 			port_cutout(CUTOUT_MARGIN*2, CUTOUT_MARGIN*2, CUTOUT_MARGIN);
 		}
 	}
@@ -145,7 +145,7 @@ module hdmi_port(DO_CUTOUT = false) {
 		cube([D, W, H ], center = true);
 		// properly oriented case cutout
 		if (DO_CUTOUT) {
-			CUTOUT_MARGIN = 0.2;
+			CUTOUT_MARGIN = 0.5;
 			port_cutout(W + CUTOUT_MARGIN*2, H + CUTOUT_MARGIN*2, CUTOUT_MARGIN);
 		}
 	}
@@ -165,7 +165,7 @@ module mini_usb_port(DO_CUTOUT = false) {
 		cube([D, W, H ], center = true);
 		// properly oriented case cutout
 		if (DO_CUTOUT) {
-			CUTOUT_MARGIN = 0.2;
+			CUTOUT_MARGIN = 0.5;
 			port_cutout(W + CUTOUT_MARGIN*2, H + CUTOUT_MARGIN*2, CUTOUT_MARGIN);
 		}
 	}
@@ -216,24 +216,39 @@ module port_cutout(W, H, CUT_RADIUS = 0.2) {
 	}
 }
 
-module mounting_post() {
+module mounting_post(INTERIOR_EDGE = BOARD_CORNER_R + CASE_PI_CLEARENCE) {
 	// difference() {
 		hull() {
-	  	circle(r = BOARD_CORNER_R);
-			translate([-BOARD_CORNER_R,-BOARD_CORNER_R,0])
-	  	square(BOARD_CORNER_R);
-			translate([0,-BOARD_CORNER_R,0])
-	  	square(BOARD_CORNER_R);
-			translate([-BOARD_CORNER_R,0,0])
-	  	square(BOARD_CORNER_R);
+			QUARTER = BOARD_CORNER_R * 0.6;
+	  	circle(r = QUARTER);
+
+			// translate([-BOARD_CORNER_R,-BOARD_CORNER_R,0])
+	  	// square(QUARTER);
+
+			translate([0,-INTERIOR_EDGE,0])
+	  	square([QUARTER, INTERIOR_EDGE]);
+
+			translate([-INTERIOR_EDGE,0,0])
+	  	square([INTERIOR_EDGE, QUARTER]);
+
+	  	// wall side quarter curve
+			difference() {
+			  circle(r = INTERIOR_EDGE);
+			  square(INTERIOR_EDGE);
+				translate([0,-INTERIOR_EDGE,0])
+			  square(INTERIOR_EDGE);
+				translate([-INTERIOR_EDGE,0,0])
+			  square(INTERIOR_EDGE);
+			}
 	  }
 	  // hole to screw into
 	 //  circle(d = MOUNTING_HOLE_DIA*.75);
   // }
+
 }
 
-module mounting_posts() {
-	mounting_layout() mounting_post();
+module mounting_posts(INTERIOR_EDGE = BOARD_CORNER_R + CASE_PI_CLEARENCE) {
+	mounting_layout() mounting_post(INTERIOR_EDGE);
 }
 // clearence for solder joints or components on underside of board
 module underside_clearence() {
@@ -262,7 +277,8 @@ module 3Aplus() {
 	color("blue", alpha = 0.2) underside_clearence();
 }
 
-INTERIOR_HEIGHT = 12.5 - 8.35;
+LID_DEPTH = 8.35;
+INTERIOR_HEIGHT = 12.5 - LID_DEPTH;
 CASE_WALL_THICKNESS = 2.5;
 CASE_PI_CLEARENCE = 1.0; // space btw pi edge and case wall
 FLOOR_THICKNESS = CASE_WALL_THICKNESS * 2;
@@ -271,6 +287,29 @@ module sphere_post() {
 	//cylinder(d = MOUNTING_HOLE_DIA * 0.75, h = BOARD_THICKNESS);
 	//translate([0,0,BOARD_THICKNESS])
 	sphere(d = MOUNTING_HOLE_DIA * .75);
+}
+
+module lid() {
+	// upper walls
+	difference() {
+		translate([0,0,INTERIOR_HEIGHT])
+		linear_extrude(height = LID_DEPTH, convexity = 2)
+		difference() {
+			hull() board_2d_positive(BOARD_CORNER_R + CASE_WALL_THICKNESS);
+			hull() board_2d_positive(BOARD_CORNER_R + CASE_PI_CLEARENCE);
+		}
+		components(DO_CUTOUT = true);
+	}
+
+	// closed top cover
+	translate([0,0,INTERIOR_HEIGHT + LID_DEPTH])
+	linear_extrude(height = FLOOR_THICKNESS/2)
+	hull() board_2d_positive(BOARD_CORNER_R + CASE_WALL_THICKNESS);
+
+	// locking posts
+	translate([0,0,BOARD_THICKNESS])
+	linear_extrude(height = INTERIOR_HEIGHT + LID_DEPTH - BOARD_THICKNESS, convexity = 2)
+	mounting_posts(BOARD_CORNER_R + CASE_PI_CLEARENCE);
 }
 
 // case_plain();
@@ -285,12 +324,12 @@ module case_plain() {
 	// through-hole clearence below g10
 	translate([0,0,-UNDERSIDE_DEPTH])
 	linear_extrude(height = UNDERSIDE_DEPTH, convexity = 2)
-	difference() {
-		hull() board_2d_positive(BOARD_CORNER_R + CASE_WALL_THICKNESS);
+	union() {
 		difference() {
-			hull() board_2d_positive(BOARD_CORNER_R + 0);
-			mounting_posts();
+			hull() board_2d_positive(BOARD_CORNER_R + CASE_WALL_THICKNESS);
+			hull() board_2d_positive(BOARD_CORNER_R + CASE_PI_CLEARENCE);
 		}
+		mounting_posts();
 	}
 
 	// floor
@@ -367,7 +406,11 @@ if (part == 1) {
 	color("blue") case("post");
 } else if (part == 3) {
 	color("blue") case_vesa(VESA_SIZE);
+} else if (part == 4) {
+	rotate([180,0,0])
+	color("pink", alpha = 0.5) lid();
 } else {
 	3Aplus();
-	color("blue") case("post");
+	color("blue") case("hole");
+	color("pink", alpha = 0.5) lid();
 }
