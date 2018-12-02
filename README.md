@@ -22,7 +22,7 @@ VESA-100 Case
 
 Raspberry Pi 3 Model A+ Model
 
-![OpenSCAD render of Raspberry Pi 3 Model A+ STL](https://raw.githubusercontent.com/thrasher/raspberry-pi-3-model-a-plus/master/pi.png)
+![OpenSCAD render of Raspberry Pi 3 Model A+ STL](https://raw.githubusercontent.com/thrasher/raspberry-pi-3-model-a-plus/master/raspberry-pi-3-model-a-plus.png)
 
 ## Summary
 
