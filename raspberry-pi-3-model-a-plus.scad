@@ -25,6 +25,7 @@ BOARD_H = 56; // 3A+ drawing
 HOLE_W = 58;
 HOLE_H = 49;
 UNDERSIDE_DEPTH = 3; // clearence required by 3B+: 2.2
+WARP_OFFSET = 0.15;
 
 // layout children relative to each mounting hole
 module mounting_layout() {
@@ -298,18 +299,35 @@ module lid() {
 			hull() board_2d_positive(BOARD_CORNER_R + CASE_WALL_THICKNESS);
 			hull() board_2d_positive(BOARD_CORNER_R + CASE_PI_CLEARENCE);
 		}
+
+		// offset to accomodate weird warpage
+		translate([0, 0, WARP_OFFSET])
 		components(DO_CUTOUT = true);
 	}
 
 	// closed top cover
-	translate([0,0,INTERIOR_HEIGHT + LID_DEPTH])
-	linear_extrude(height = FLOOR_THICKNESS/2)
-	hull() board_2d_positive(BOARD_CORNER_R + CASE_WALL_THICKNESS);
+	translate([0,0,INTERIOR_HEIGHT + LID_DEPTH]) {
+	hull() {
+	linear_extrude(height = 0.1)
+	board_2d_positive(BOARD_CORNER_R + CASE_WALL_THICKNESS);
+	translate([0,0,FLOOR_THICKNESS/2])
+	// hull()
+	mounting_layout()
+	rotate([0,0,180])
+  rotate_extrude(angle = 90, convexity = 100)
+  translate([BOARD_CORNER_R + CASE_WALL_THICKNESS - FLOOR_THICKNESS/2, 0, 0])
+	circle(d = FLOOR_THICKNESS);
+	}
+	}
 
 	// locking posts
-	translate([0,0,BOARD_THICKNESS])
-	linear_extrude(height = INTERIOR_HEIGHT + LID_DEPTH - BOARD_THICKNESS, convexity = 2)
+	translate([0,0,INTERIOR_HEIGHT])
+	linear_extrude(height = LID_DEPTH, convexity = 2)
 	mounting_posts(BOARD_CORNER_R + CASE_PI_CLEARENCE);
+	translate([0,0,BOARD_THICKNESS + WARP_OFFSET])
+	linear_extrude(height = INTERIOR_HEIGHT - BOARD_THICKNESS - WARP_OFFSET, convexity = 2)
+	mounting_posts(BOARD_CORNER_R + CASE_PI_CLEARENCE - 0.1);
+
 }
 
 // case_plain();
@@ -341,6 +359,8 @@ module case_plain() {
 module case(MOUNT = "post") {
 	difference() {
 		case_plain();
+		// offset to accomodate weird warpage
+		translate([0, 0, WARP_OFFSET])
 		components(DO_CUTOUT = true);
 
 		if (MOUNT != "post") {
@@ -403,7 +423,7 @@ VESA_SIZE = 75;
 if (part == 1) {
 	3Aplus();
 } else if (part == 2) {
-	color("blue") case("post");
+	color("blue") case("hole");
 } else if (part == 3) {
 	color("blue") case_vesa(VESA_SIZE);
 } else if (part == 4) {
