@@ -15,7 +15,7 @@ def render():
 
 	scad = []
 	# plain image
-	scad.append(subprocess.Popen(['openscad','raspberry-pi-3-model-a-plus.scad','-o','raspberry-pi-3-model-a-plus.png','--preview','--imgsize=626,470']))
+	scad.append(subprocess.Popen(['openscad','raspberry-pi-3-model-a-plus.scad','-o','render.png','--preview','--imgsize=626,470']))
 
 	scad.append(subprocess.Popen(['openscad','raspberry-pi-3-model-a-plus.scad','-o','raspberry-pi-3-model-a-plus.stl','-D', 'part=1']))
 	scad.append(subprocess.Popen(['openscad','raspberry-pi-3-model-a-plus.scad','-o','raspberry-pi-3-model-a-plus.png','-D', 'part=1','--preview','--imgsize=626,470']))
