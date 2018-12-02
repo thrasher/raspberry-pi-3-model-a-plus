@@ -2,6 +2,14 @@
 
 This is a work in proress... the case hasn't been tested with an actual physical 3A+, as my shippment hasn't arrived yet.
 
+Two Parts & Pi
+
+![OpenSCAD render of case STL](https://raw.githubusercontent.com/thrasher/raspberry-pi-3-model-a-plus/master/raspberry-pi-3-model-a-plus.png)
+
+Lid
+
+![OpenSCAD render of case STL](https://raw.githubusercontent.com/thrasher/raspberry-pi-3-model-a-plus/master/lid.png)
+
 Simple Case
 
 ![OpenSCAD render of case STL](https://raw.githubusercontent.com/thrasher/raspberry-pi-3-model-a-plus/master/case.png)
