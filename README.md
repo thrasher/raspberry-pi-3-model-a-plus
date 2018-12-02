@@ -1,7 +1,5 @@
 # Raspberry Pi 3 Model A+
 
-This is a work in proress... the case hasn't been tested with an actual physical 3A+, as my shippment hasn't arrived yet.
-
 Assembled Parts in Default Configuration
 
 ![OpenSCAD render of case STL](https://raw.githubusercontent.com/thrasher/raspberry-pi-3-model-a-plus/master/render.png)
