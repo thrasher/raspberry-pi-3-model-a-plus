@@ -20,7 +20,7 @@ VESA-100 Case
 
 ![OpenSCAD render of VESA-100 case STL](https://raw.githubusercontent.com/thrasher/raspberry-pi-3-model-a-plus/master/case-vesa-100.png)
 
-Raspberry Pi 3 Model A+ Model
+Raspberry Pi 3 Model A+ Model.  This part is useful to gauge fitment for a case.  Dimensions are +/- 0.05 mm
 
 ![OpenSCAD render of Raspberry Pi 3 Model A+ STL](https://raw.githubusercontent.com/thrasher/raspberry-pi-3-model-a-plus/master/raspberry-pi-3-model-a-plus.png)
 
@@ -29,10 +29,6 @@ Raspberry Pi 3 Model A+ Model
 Simple cases for a [Raspberry Pi 3 Model A+](https://www.raspberrypi.org/products/raspberry-pi-3-model-a-plus/).
 
 The VESA cases allow for mounting to the back of a monitor using M4 screws.
-
-Geometry created from the [published mechanical drawing](https://www.raspberrypi.org/app/uploads/2018/11/Raspberry_Pi_3A_mechanical-drawing.pdf), and caliper measurements from a 3 B+ (since the 3 A+ part hadn't shipped at the time - Nov 16, 2018).
-
-This part is useful to gauge fitment for a case.  dimensions are +/- 0.05 mm
 
 ## Print Settings
 
