@@ -321,13 +321,20 @@ module lid() {
 	}
 
 	// locking posts
-	translate([0,0,INTERIOR_HEIGHT])
-	linear_extrude(height = LID_DEPTH, convexity = 2)
-	mounting_posts(BOARD_CORNER_R + CASE_PI_CLEARENCE);
-	translate([0,0,BOARD_THICKNESS + WARP_OFFSET])
-	linear_extrude(height = INTERIOR_HEIGHT - BOARD_THICKNESS - WARP_OFFSET, convexity = 2)
-	mounting_posts(BOARD_CORNER_R + CASE_PI_CLEARENCE - 0.1);
-
+	difference() {
+		union() {
+			translate([0,0,INTERIOR_HEIGHT])
+			linear_extrude(height = LID_DEPTH, convexity = 2)
+			mounting_posts(BOARD_CORNER_R + CASE_PI_CLEARENCE);
+			translate([0,0,BOARD_THICKNESS + WARP_OFFSET])
+			linear_extrude(height = INTERIOR_HEIGHT - BOARD_THICKNESS - WARP_OFFSET, convexity = 2)
+			mounting_posts(BOARD_CORNER_R + CASE_PI_CLEARENCE - 0.1);
+		}
+		// cutout for screws
+		linear_extrude(height = 4, convexity = 2)
+		hull()
+		board_2d_positive(2.5);
+	}
 }
 
 // case_plain();
